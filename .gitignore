@@ -1,0 +1,23 @@
+# IDE and editor state
+**/.vs/
+**/.vscode/
+*.user
+*.suo
+
+# Build intermediates
+**/obj/
+
+# Runtime logs
+**/*.wcelllog
+**/logs/
+
+# Local runtime configuration
+/Run/DebugX86/RealmServerConfig.xml
+/Run/DebugX86/RealmServerConfig.xml.bak
+
+# Compiled first-party server assemblies
+/Run/DebugX86/Cell.Core.dll
+/Run/DebugX86/Cell.Core.pdb
+/Run/DebugX86/WCell.*.dll
+/Run/DebugX86/WCell.*.pdb
+/Run/DebugX86/WCell.RealmServerConsole.exe
