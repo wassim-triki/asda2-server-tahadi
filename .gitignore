@@ -7,9 +7,9 @@
 # Build intermediates
 **/obj/
 
-# Runtime logs
+# Generated runtime logs; do not ignore WCell.RealmServer/Logs source files
 **/*.wcelllog
-**/logs/
+/Run/**/logs/
 
 # Local runtime configuration
 /Run/DebugX86/RealmServerConfig.xml
