@@ -2,7 +2,7 @@ services:
   db:
     image: mysql:5.7.44-oraclelinux7
     ports:
-      - "127.0.0.1:3307:3306"
+      - "127.0.0.1:3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-asda2_dev_root}
       MYSQL_DATABASE: asda2tahadidb
