@@ -1,0 +1,19 @@
+services:
+  db:
+    image: mysql:5.7.44-oraclelinux7
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-asda2_dev_root}
+      MYSQL_DATABASE: asda2tahadidb
+    volumes:
+      - type: bind
+        source: ./database
+        target: /docker-entrypoint-initdb.d
+        read_only: true
+      - db_data:/var/lib/mysql
+    command:
+      - --lower-case-table-names=1
+
+volumes:
+  db_data:

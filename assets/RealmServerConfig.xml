@@ -570,7 +570,7 @@
           <ContentDir>../Content/</ContentDir>
           <DatabaseType>mysql5</DatabaseType>
           <DBCFolderName>dbc3.3.5</DBCFolderName>
-          <DBConnectionString>Server=127.0.0.1;Port=3306;Database=asda2x100;CharSet=utf8;Uid=root;Pwd=;</DBConnectionString>
+          <DBConnectionString>Server=127.0.0.1;Port=3306;Database=asda2tahadidb;CharSet=utf8;Uid=root;Pwd=asda2_dev_root;SslMode=None;</DBConnectionString>
           <DefaultLocale>English</DefaultLocale>
           <DefaultRole>Player</DefaultRole>
           <ExternalAddress>127.0.0.1</ExternalAddress>
