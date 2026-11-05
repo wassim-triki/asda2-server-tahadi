@@ -74,6 +74,14 @@
   <ItemGroup>
     <Content Include="WCell.RealmServerConsole.ico" />
   </ItemGroup>
+<ItemGroup>
+  <Content Include="..\assets\NLog.config">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+  <Content Include="..\assets\MySql.Data.dll">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
