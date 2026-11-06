@@ -78,7 +78,7 @@
   <Content Include="..\assets\NLog.config">
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-  <Content Include="..\assets\MySql.Data.dll">
+  <Content Include="..\Lib\MySql.Data.dll">
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
 </ItemGroup>
