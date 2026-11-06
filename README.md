@@ -4,81 +4,90 @@ A WCell-based private server for **Asda 2 (Tahadi)**, maintained as part of the 
 
 ## Current Status
 
-The server is experimental but playable. Login, character management, movement, combat, loot, inventory, persistence, and multiplayer have been tested successfully.
+The server is experimental but playable. Login, characters, movement, combat, loot, inventory, persistence, and multiplayer have been tested.
 
-Some systems remain incomplete, notably quests.
+Some systems, notably quests, remain incomplete.
 
 ## Getting Started
 
-The server runs on **Windows**, targets **.NET Framework 4.0**, and requires **MySQL 5.7**. A compatible game client is required separately.
+**Requirements:** Windows, .NET Framework 4.0 runtime, MySQL 5.7, and a compatible game client (separate).
 
-### 1. Build from Source
+### 1. Set Up the Database
 
-We use **MSBuild from Visual Studio 2019** to compile the server. The full Visual Studio IDE is not required.
+Choose one of the following options. Database setup files are available in the repository.
 
-1. Download [Visual Studio 2019 Build Tools](https://aka.ms/vs/16/release/vs_buildtools.exe) from Microsoft.
-2. Select the **.NET desktop build tools** workload and ensure **.NET Framework 4 targeting pack** is selected under Individual components.
-3. Open **Developer Command Prompt for VS 2019** and verify the installation with `msbuild -version`.
-
-From the repository root, build the solution:
-
-```bat
-MSBuild Asda2_Server.sln /p:Configuration=Debug /p:Platform=x86
-```
-
-The compiled executable is generated at `Run\DebugX86\WCell.RealmServerConsole.exe`.
-
-### 2. Database
-
-Choose one of the following MySQL 5.7 setups.
-
-**Option A: Docker Compose (recommended)**
-
+**Option 1: Docker Compose (recommended)**
 Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and run from the repository root:
 
-```bat
+```bash
 docker compose up -d
 ```
 
-MySQL automatically imports `database/asda2tahadidb.sql` on first startup and persists data in a Docker volume. It is available at `127.0.0.1:3306`, using the credentials in `compose.yaml`.
+This starts MySQL 5.7, imports `database/asda2tahadidb.sql` on first initialization, and stores the database in a persistent volume.
 
-To manage the database:
+Default connection: `127.0.0.1:3306`, database `asda2tahadidb`, user `root`, password `asda2_dev_root` (unless overridden).
 
-```bat
-docker compose down       # Stop, preserve data
-docker compose up -d      # Start
-docker compose down -v    # Reset, delete all database data
-```
+**Option 2: Native MySQL 5.7**
 
-**Option B: Native MySQL 5.7**
-
-Install [MySQL Server 5.7](https://dev.mysql.com/downloads/installer/5.7.html) using its default settings.
-
-From the repository root, using the MySQL command-line client:
+Install MySQL 5.7 and import the database from the repository root:
 
 ```bat
 mysql -u root -p -e "CREATE DATABASE asda2tahadidb"
 mysql --default-character-set=utf8 -u root -p asda2tahadidb < database\asda2tahadidb.sql
 ```
 
+### 2. Get the Server
+
+**Option 1: Prebuilt Release**
+
+1. Download `Asda2-Server-Windows-x86.zip` from [GitHub Releases](https://github.com/wassim-triki/asda2-server-tahadi/releases).
+2. Extract it anywhere on Windows.
+3. Continue to configuration below.
+
+**Option 2: Build from Source**
+
+Install [Visual Studio 2019 Build Tools](https://aka.ms/vs/16/release/vs_buildtools.exe), including MSBuild and the **.NET Framework 4 targeting pack**.
+
+From PowerShell at the repository root:
+
+```powershell
+.\scripts\package.ps1
+```
+
+This builds `Release|x86` and generates:
+
+```text
+dist/
+├── Asda2-Server-Windows-x86/
+└── Asda2-Server-Windows-x86.zip
+```
+
+To package an existing Release build:
+
+```powershell
+.\scripts\package.ps1 -skipBuild
+```
+
+For a manual Debug build without packaging:
+
+```bat
+MSBuild Asda2_Server.sln /p:Configuration=Debug /p:Platform=x86
+```
+
 ### 3. Configure and Run
 
-Copy the supplied configuration template into the runtime directory:
+**Prebuilt or packaged server:** Run `ReleaseX86\WCell.RealmServerConsole.exe` once to generate `RealmServerConfig.xml`. Exit when prompted, edit the generated file, then restart the server.
 
-```bat
-copy assets\RealmServerConfig.xml Run\DebugX86\RealmServerConfig.xml
-```
+**Manual Debug build:** Copy `assets\RealmServerConfig.xml` to `Run\DebugX86\` and edit it.
 
-Edit `Run\DebugX86\RealmServerConfig.xml` and verify that `DBConnectionString` matches your MySQL port and credentials.
+In `RealmServerConfig.xml`, configure:
 
-Launch the server:
+- `DBConnectionString` — MySQL host, port, database, and credentials.
+- `Host` and `ExternalAddress` — Server listening and client connection addresses.
+- `Port` — Game server port.
+- `RealmName` — Server name.
 
-```bat
-cd Run\DebugX86
-WCell.RealmServerConsole.exe
-```
-
-Configure your compatible game client to connect to the server's configured address and port.
+Make sure MySQL is running, then launch `WCell.RealmServerConsole.exe` from its runtime directory. Configure your compatible client to connect to the server's address and port.
 
 ## Source
 
