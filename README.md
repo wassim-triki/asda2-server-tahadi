@@ -48,30 +48,16 @@ mysql --default-character-set=utf8 -u root -p asda2tahadidb < database\asda2taha
 
 Install [Visual Studio 2019 Build Tools](https://aka.ms/vs/16/release/vs_buildtools.exe), including MSBuild and the **.NET Framework 4 targeting pack**.
 
-From PowerShell at the repository root:
+Build from the project root:
 
 ```powershell
-.\scripts\package.ps1
+.\scripts\build.ps1           # Debug x86 (default)
 ```
 
-This builds `Release|x86` and generates:
-
-```text
-dist/
-├── Asda2-Server-Windows-x86/
-└── Asda2-Server-Windows-x86.zip
-```
-
-To package an existing Release build:
+To package your own release:
 
 ```powershell
-.\scripts\package.ps1 -skipBuild
-```
-
-For a manual Debug build without packaging:
-
-```bat
-MSBuild Asda2_Server.sln /p:Configuration=Debug /p:Platform=x86
+.\scripts\package.ps1  # Use -SkipBuild to package an existing Release build
 ```
 
 ### 3. Configure and Run
