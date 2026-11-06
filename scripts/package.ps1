@@ -1,38 +1,134 @@
-# we want to copy ../Run/Releasex86 and ../Run/Content into ../dist/a-folder-we-generate and zip that folder
 
+[CmdletBinding()]
+param(
+    [switch]$skipBuild
+)
 
-# TODO: invoke MSBuild
-# Check if MSBuild is in path
+$ErrorActionPreference = 'Stop'
 
+# Project root
+$root = Split-Path -Parent $PSScriptRoot
 
+# Build Release x86 unless explicitly skipped
+if (-not $skipBuild) {
+    $msbuildPath = Get-Command msbuild.exe -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty Source
 
-# path of roject root
-$root= Split-Path -Parent  $PSScriptRoot 
+    if (-not $msbuildPath) {
+        $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 
-# path of Run folder content and release
-$content = "$root\Run\Content" 
-$release = "$root\Run\ReleaseX86" 
-# path of dist folder
-$dist = "$root\dist" 
+        if (-not (Test-Path $vsWhere)) {
+            throw "MSBuild was not found on PATH, and vswhere.exe was not found. Install Visual Studio Build Tools with the MSBuild component."
+        }
 
-# TODO: check name and concidering veriosning
-$package = "$dist\Asda2-Server-Windows-x86"
+        $msbuildPath = & $vsWhere -latest -products '*' `
+            -requires Microsoft.Component.MSBuild `
+            -find 'MSBuild\**\Bin\MSBuild.exe' |
+            Select-Object -First 1
 
+        if (-not $msbuildPath) {
+            throw "No MSBuild installation was detected. Install or modify Visual Studio Build Tools to include MSBuild."
+        }
+    }
 
+    & $msbuildPath "$root\Asda2_Server.sln" /p:Configuration=Release /p:Platform=x86 /t:Rebuild
 
-
-if(Test-Path $package){
-  Remove-Item -Path $package -Force -Recurse
+    if ($LASTEXITCODE -ne 0) {
+        throw "MSBuild failed with exit code $LASTEXITCODE."
+    }
 }
-# Create the destination folder
-New-Item -Path $package -ItemType Directory
 
-# Copy over only the needed Content and Realse files and folders
+# Source and destination paths
+$content = "$root\Run\Content"
+$release = "$root\Run\ReleaseX86"
+$dist = "$root\dist"
+
+$releaseTitle = "Asda2-Server-Windows-x86"
+$releaseDir = "$dist\$releaseTitle"
+$releasePackage = "$dist\$releaseTitle.zip"
+
+# Verify source directories
+if (-not (Test-Path $release -PathType Container)) {
+    throw "Release output directory not found: $release"
+}
+
+if (-not (Test-Path $content -PathType Container)) {
+    throw "Content directory not found: $content"
+}
+
+# Prepare a fresh staging directory
+if (-not (Test-Path $dist)) {
+    New-Item -Path $dist -ItemType Directory | Out-Null
+}
+
+if (Test-Path $releaseDir) {
+    Remove-Item -Path $releaseDir -Recurse -Force
+}
+
+New-Item -Path $releaseDir -ItemType Directory | Out-Null
+
+# Copy runtime files, excluding local configurations and debug files
 $excludedReleaseFiles = "*.pdb", "RealmServerConfig.xml", "RealmServerConfig.xml.bak"
-$excludedReleaseFolders = "logs"
+$excludedReleaseDirs = "logs"
 
-robocopy $release "$package\ReleaseX86" /E /XF $excludedReleaseFiles /XD $excludedReleaseFolders
-robocopy $content "$package\Content" /E
+robocopy $release "$releaseDir\ReleaseX86" /E /XF $excludedReleaseFiles /XD $excludedReleaseDirs /R:2 /W:1
 
-# Zip up the package
-Compress-Archive -Path $package -DestinationPath $package -Force
+if ($LASTEXITCODE -ge 8) {
+    throw "Failed to copy Release files. Robocopy exit code: $LASTEXITCODE."
+}
+
+robocopy $content "$releaseDir\Content" /E /R:2 /W:1
+
+if ($LASTEXITCODE -ge 8) {
+    throw "Failed to copy Content. Robocopy exit code: $LASTEXITCODE."
+}
+
+# Validate required runtime files
+$requiredFiles = @(
+    "ReleaseX86\WCell.RealmServerConsole.exe"
+    "ReleaseX86\WCell.RealmServer.dll"
+    "ReleaseX86\MySql.Data.dll"
+    "ReleaseX86\NLog.config"
+    "Content\Impl\UDB\Tables.xml"
+    "Content\Lang\English.xml"
+)
+
+foreach ($file in $requiredFiles) {
+    if (-not (Test-Path "$releaseDir\$file" -PathType Leaf)) {
+        throw "Package validation failed: missing required file '$file'."
+    }
+}
+
+# Ensure generated configuration and logs are excluded
+$excludedPaths = @(
+    "ReleaseX86\RealmServerConfig.xml"
+    "ReleaseX86\RealmServerConfig.xml.bak"
+    "ReleaseX86\logs"
+)
+
+foreach ($path in $excludedPaths) {
+    if (Test-Path "$releaseDir\$path") {
+        throw "Package validation failed: unexpected '$path'."
+    }
+}
+
+$pdbFiles = Get-ChildItem -Path "$releaseDir\ReleaseX86" -Filter "*.pdb" -File -Recurse
+
+if ($pdbFiles) {
+    throw "Package validation failed: debug symbols were included."
+}
+
+# Create the ZIP without overwriting the previous package on compression failure
+$tempPackage = "$dist\tmp.zip"
+
+try {
+    Compress-Archive -Path $releaseDir -DestinationPath $tempPackage -Force
+    Move-Item -Path $tempPackage -Destination $releasePackage -Force
+}
+finally {
+    if (Test-Path $tempPackage) {
+        Remove-Item -Path $tempPackage -Force
+    }
+}
+
+Write-Host "Successfully packaged: $releasePackage" -ForegroundColor Green
