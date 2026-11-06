@@ -82,10 +82,10 @@ MSBuild Asda2_Server.sln /p:Configuration=Debug /p:Platform=x86
 
 In `RealmServerConfig.xml`, configure:
 
-- `DBConnectionString` — MySQL host, port, database, and credentials.
-- `Host` and `ExternalAddress` — Server listening and client connection addresses.
-- `Port` — Game server port.
-- `RealmName` — Server name.
+- `DBConnectionString`: MySQL host, port, database, and credentials.
+- `Host` and `ExternalAddress`: Server listening and client connection addresses.
+- `Port`: Game server port.
+- `RealmName`: Server name.
 
 Make sure MySQL is running, then launch `WCell.RealmServerConsole.exe` from its runtime directory. Configure your compatible client to connect to the server's address and port.
 
