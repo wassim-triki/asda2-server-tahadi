@@ -10,6 +10,7 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 
 # Build Release x86 unless explicitly skipped
+# TODO: extract this into a general build script with flags for build configs debug/release
 if (-not $skipBuild) {
     $msbuildPath = Get-Command msbuild.exe -ErrorAction SilentlyContinue |
         Select-Object -First 1 -ExpandProperty Source
@@ -42,6 +43,7 @@ if (-not $skipBuild) {
 $content = "$root\Run\Content"
 $release = "$root\Run\ReleaseX86"
 $dist = "$root\dist"
+$defaultServerConfig = "$root\assets\RealmServerConfig.xml"
 
 $releaseTitle = "Asda2-Server-Windows-x86"
 $releaseDir = "$dist\$releaseTitle"
@@ -83,6 +85,8 @@ if ($LASTEXITCODE -ge 8) {
     throw "Failed to copy Content. Robocopy exit code: $LASTEXITCODE."
 }
 
+Copy-Item -Path $defaultServerConfig -Destination "$releaseDir\ReleaseX86"
+
 # Validate required runtime files
 $requiredFiles = @(
     "ReleaseX86\WCell.RealmServerConsole.exe"
@@ -90,7 +94,8 @@ $requiredFiles = @(
     "ReleaseX86\MySql.Data.dll"
     "ReleaseX86\NLog.config"
     "Content\Impl\UDB\Tables.xml"
-    "Content\Lang\English.xml"
+    "Content\Lang\English.xml",
+    "ReleaseX86\RealmServerConfig.xml"
 )
 
 foreach ($file in $requiredFiles) {
@@ -99,10 +104,8 @@ foreach ($file in $requiredFiles) {
     }
 }
 
-# Ensure generated configuration and logs are excluded
+# Ensure logs are excluded
 $excludedPaths = @(
-    "ReleaseX86\RealmServerConfig.xml"
-    "ReleaseX86\RealmServerConfig.xml.bak"
     "ReleaseX86\logs"
 )
 
