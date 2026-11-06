@@ -76,7 +76,7 @@ MSBuild Asda2_Server.sln /p:Configuration=Debug /p:Platform=x86
 
 ### 3. Configure and Run
 
-**Prebuilt or packaged server:** Run `ReleaseX86\WCell.RealmServerConsole.exe` once to generate `RealmServerConfig.xml`. Exit when prompted, edit the generated file, then restart the server.
+**Prebuilt or packaged server:** Edit `RealmServerConfig.xml` if needed, then launch `ReleaseX86\WCell.RealmServerConsole.exe`.
 
 **Manual Debug build:** Copy `assets\RealmServerConfig.xml` to `Run\DebugX86\` and edit it.
 
