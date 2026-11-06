@@ -21,3 +21,5 @@
 /Run/DebugX86/WCell.*.dll
 /Run/DebugX86/WCell.*.pdb
 /Run/DebugX86/WCell.RealmServerConsole.exe
+
+/dist/
