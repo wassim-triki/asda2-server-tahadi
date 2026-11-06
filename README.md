@@ -44,7 +44,7 @@ mysql --default-character-set=utf8 -u root -p asda2tahadidb < database\asda2taha
 2. Extract it anywhere on Windows.
 3. Continue to configuration below.
 
-**Option 2 Build from Source**
+**Option 2: Build from Source**
 
 Install [Visual Studio 2019 Build Tools](https://aka.ms/vs/16/release/vs_buildtools.exe), including MSBuild and the **.NET Framework 4 targeting pack**.
 
@@ -82,12 +82,12 @@ MSBuild Asda2_Server.sln /p:Configuration=Debug /p:Platform=x86
 
 In `RealmServerConfig.xml`, configure:
 
-- `DBConnectionString` MySQL host, port, database, and credentials.
-- `Host` and `ExternalAress` Server listening and client connection addresses.
-- `Port` Game server port.
-- `RealmNe` Server namedd.
+- `DBConnectionString` — MySQL host, port, database, and credentials.
+- `Host` and `ExternalAddress` — Server listening and client connection addresses.
+- `Port` — Game server port.
+- `RealmName` — Server name.
 
-Make sureameMySQL is running, then launch `WCell.RealmServerConsole.exe` from its runtime directory. Configure your compatible client to connect to the server's address and port.
+Make sure MySQL is running, then launch `WCell.RealmServerConsole.exe` from its runtime directory. Configure your compatible client to connect to the server's address and port.
 
 ## Source
 
