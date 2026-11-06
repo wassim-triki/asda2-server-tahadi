@@ -1,7 +1,7 @@
 
 [CmdletBinding()]
 param(
-    [switch]$skipBuild
+    [switch]$SkipBuild
 )
 
 $ErrorActionPreference = 'Stop'
@@ -10,33 +10,8 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 
 # Build Release x86 unless explicitly skipped
-# TODO: extract this into a general build script with flags for build configs debug/release
-if (-not $skipBuild) {
-    $msbuildPath = Get-Command msbuild.exe -ErrorAction SilentlyContinue |
-        Select-Object -First 1 -ExpandProperty Source
-
-    if (-not $msbuildPath) {
-        $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-
-        if (-not (Test-Path $vsWhere)) {
-            throw "MSBuild was not found on PATH, and vswhere.exe was not found. Install Visual Studio Build Tools with the MSBuild component."
-        }
-
-        $msbuildPath = & $vsWhere -latest -products '*' `
-            -requires Microsoft.Component.MSBuild `
-            -find 'MSBuild\**\Bin\MSBuild.exe' |
-            Select-Object -First 1
-
-        if (-not $msbuildPath) {
-            throw "No MSBuild installation was detected. Install or modify Visual Studio Build Tools to include MSBuild."
-        }
-    }
-
-    & $msbuildPath "$root\Asda2_Server.sln" /p:Configuration=Release /p:Platform=x86 /t:Rebuild
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "MSBuild failed with exit code $LASTEXITCODE."
-    }
+if(!$SkipBuild){
+    & "$PSScriptRoot\build.ps1" -Release
 }
 
 # Source and destination paths
