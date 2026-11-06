@@ -22,4 +22,8 @@
 /Run/DebugX86/WCell.*.pdb
 /Run/DebugX86/WCell.RealmServerConsole.exe
 
+# Release build output
+/Run/ReleaseX86/
+
+# Generated distributions
 /dist/
