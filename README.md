@@ -62,7 +62,12 @@ Other settings:
 
 ### 4. Start the server
 
-Run `\ReleaseX86.\WCell.RealmServerConsole.exe`
+From the extracted server directory, run:
+
+```powershell
+cd .\ReleaseX86
+.\WCell.RealmServerConsole.exe
+```
 
 Configure a compatible game client to connect to your server address and port.
 
