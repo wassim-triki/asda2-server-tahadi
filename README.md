@@ -40,14 +40,21 @@ This starts MySQL 5.7 at `127.0.0.1:3306`, imports `database/asda2tahadidb.sql` 
 #### Option B: Native MySQL 5.7
 
 1. Install **MySQL Server 5.7** from the [MySQL archives](https://downloads.mysql.com/archives/community/) and make sure the MySQL service is running.
-2. Open **Command Prompt (`cmd.exe`)** in the extracted server directory and run:
+2. Open **Command Prompt (`cmd.exe`)** in the extracted server directory. If `mysql` is on PATH, run:
 
    ```bat
    mysql -u root -p -e "CREATE DATABASE asda2tahadidb"
    mysql --default-character-set=utf8 -u root -p asda2tahadidb < database\asda2tahadidb.sql
    ```
 
-Enter the MySQL root password when prompted. If `mysql` is not recognized, invoke it by its full path (typically `C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe`) without leaving the extracted server directory.
+   Otherwise, use the full path to `mysql.exe` (adjust if installed elsewhere):
+
+   ```bat
+   "C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe" -u root -p -e "CREATE DATABASE asda2tahadidb"
+   "C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe" --default-character-set=utf8 -u root -p asda2tahadidb < database\asda2tahadidb.sql
+   ```
+
+Enter the MySQL root password when prompted.
 
 ### 3. Configure the server
 
