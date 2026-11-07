@@ -1,80 +1,80 @@
 # Asda 2 Tahadi Server
 
-A WCell-based private server for **Asda 2 (Tahadi)**, maintained as part of the Asda 2 Local project.
+A WCell-based private server for **Asda 2 (Tahadi)**.
 
-## Current Status
+The server is experimental but playable. Login, characters, movement, combat, loot, inventory, persistence, and multiplayer have been tested. Some systems, including quests, remain incomplete.
 
-The server is experimental but playable. Login, characters, movement, combat, loot, inventory, persistence, and multiplayer have been tested.
+The game client is not included.
 
-Some systems, notably quests, remain incomplete.
+## Getting started
 
-## Getting Started
+The Windows release lets you host a server without building from source.
 
-**Requirements:** Windows, .NET Framework 4.0 runtime, MySQL 5.7, and a compatible game client (separate).
+### Requirements
 
-### 1. Set Up the Database
+- Windows with .NET Framework 4.0 or a compatible later .NET Framework version.
+- MySQL 5.7, either through Docker Compose (recommended) or installed directly on Windows.
 
-Choose one of the following options. Database setup files are available in the repository.
+### 1. Download the server
 
-**Option 1: Docker Compose (recommended)**
-Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and run from the repository root:
+Download `Asda2-Server-Windows-x86.zip` from [GitHub Releases](https://github.com/wassim-triki/asda2-server-tahadi/releases) and extract it.
 
-```bash
-docker compose up -d
-```
+Run the following commands from the extracted `Asda2-Server-Windows-x86` directory, which contains `compose.yaml` and `database/`.
 
-This starts MySQL 5.7, imports `database/asda2tahadidb.sql` on first initialization, and stores the database in a persistent volume.
+### 2. Set up the database
 
-Default connection: `127.0.0.1:3306`, database `asda2tahadidb`, user `root`, password `asda2_dev_root` (unless overridden).
+Choose one method.
 
-**Option 2: Native MySQL 5.7**
+#### Option A: Docker Compose (recommended)
 
-Install MySQL 5.7 and import the database from the repository root:
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and start it.
+2. Open `compose.yaml` and set `MYSQL_ROOT_PASSWORD` to your own password.
+3. Run:
 
-```bat
-mysql -u root -p -e "CREATE DATABASE asda2tahadidb"
-mysql --default-character-set=utf8 -u root -p asda2tahadidb < database\asda2tahadidb.sql
-```
+   ```powershell
+   docker compose up -d
+   ```
 
-### 2. Get the Server
+This starts MySQL 5.7 at `127.0.0.1:3306`, imports `database/asda2tahadidb.sql` on first initialization, and persists the database in a Docker volume.
 
-**Option 1: Prebuilt Release**
+#### Option B: Native MySQL 5.7
 
-1. Download `Asda2-Server-Windows-x86.zip` from [GitHub Releases](https://github.com/wassim-triki/asda2-server-tahadi/releases).
-2. Extract it anywhere on Windows.
-3. Continue to configuration below.
+1. Install **MySQL Server 5.7** from the [MySQL archives](https://downloads.mysql.com/archives/community/) and make sure the MySQL service is running.
+2. Open **Command Prompt (`cmd.exe`)** in the extracted server directory and run:
 
-**Option 2: Build from Source**
+   ```bat
+   mysql -u root -p -e "CREATE DATABASE asda2tahadidb"
+   mysql --default-character-set=utf8 -u root -p asda2tahadidb < database\asda2tahadidb.sql
+   ```
 
-Install [Visual Studio 2019 Build Tools](https://aka.ms/vs/16/release/vs_buildtools.exe), including MSBuild and the **.NET Framework 4 targeting pack**.
+Enter the MySQL root password when prompted. If `mysql` is not recognized, invoke it by its full path (typically `C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe`) without leaving the extracted server directory.
 
-Build from the project root:
+### 3. Configure the server
+
+Open `ReleaseX86\RealmServerConfig.xml` and set the `Pwd=` value in `DBConnectionString` to the MySQL password from step 2. The default host (`127.0.0.1`), port (`3306`), database (`asda2tahadidb`), and user (`root`) match the setup above.
+
+Other settings:
+
+- `Host`: address the server listens on (default `127.0.0.1`).
+- `ExternalAddress`: address clients connect to (default `127.0.0.1`).
+- `Port`: game server port (default `5000`).
+- `RealmName`: server name.
+
+### 4. Start the server
+
+From the extracted server directory, run:
 
 ```powershell
-.\scripts\build.ps1           # Debug x86 (default)
+cd .\ReleaseX86
+.\WCell.RealmServerConsole.exe
 ```
 
-To package your own release:
+Configure a compatible game client to connect to your server address and port.
 
-```powershell
-.\scripts\package.ps1  # Use -SkipBuild to package an existing Release build
-```
+## Development
 
-### 3. Configure and Run
+For source builds and local development, see [CONTRIBUTING.md](https://github.com/wassim-triki/asda2-server-tahadi/blob/main/CONTRIBUTING.md).
 
-**Prebuilt or packaged server:** Edit `RealmServerConfig.xml` if needed, then launch `ReleaseX86\WCell.RealmServerConsole.exe`.
+## Project background
 
-**Manual Debug build:** Copy `assets\RealmServerConfig.xml` to `Run\DebugX86\` and edit it.
-
-In `RealmServerConfig.xml`, configure:
-
-- `DBConnectionString`: MySQL host, port, database, and credentials.
-- `Host` and `ExternalAddress`: Server listening and client connection addresses.
-- `Port`: Game server port.
-- `RealmName`: Server name.
-
-Make sure MySQL is running, then launch `WCell.RealmServerConsole.exe` from its runtime directory. Configure your compatible client to connect to the server's address and port.
-
-## Source
-
-Based on the Tahadi server distribution available in [0xFh/Asda2-Project](https://github.com/0xFh/Asda2-Project).
+Based on the Tahadi server distribution in [0xFh/Asda2-Project](https://github.com/0xFh/Asda2-Project). This is a community-maintained project, not an official Asda 2 server.

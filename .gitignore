@@ -27,3 +27,5 @@
 
 # Generated distributions
 /dist/
+
+compose.override.yaml
